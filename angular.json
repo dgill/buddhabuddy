@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1, 
+  "version": 1,
   "newProjectRoot": "projects",
   "projects": {
     "BuddhaBuddy": {
@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "BuddhaBuddy"
+    }
+  },
+  "defaultProject": "BuddhaBuddy",
+  "cli": {
+    "analytics": "375fd4bb-e7a2-4da8-b58e-a4c3ecc22b2e"
+  }
 }
