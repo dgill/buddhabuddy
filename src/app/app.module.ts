@@ -12,8 +12,9 @@ import {
   NG_GAPI_CONFIG,
   GoogleApiConfig
 } from "./ng-gapi";
-import { TrackeeComponent } from './trackee/trackee/trackee.component';
+import { TrackeeListComponent } from './trackee/trackee-list.component';
 import { UserService } from './user/user.service';
+import { BBGoogleSheetsApiService } from './ng-gapi/BBGoogleSheetsApi.service';
 
 let gapiClientConfig: NgGapiClientConfig = {
   client_id: "51389497998-jthp31sb7d67mib99pbbmfcsree1be0n.apps.googleusercontent.com",
@@ -28,7 +29,7 @@ let gapiClientConfig: NgGapiClientConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    TrackeeComponent
+    TrackeeListComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +39,10 @@ let gapiClientConfig: NgGapiClientConfig = {
       useValue: gapiClientConfig
     })
   ],
-  providers: [UserService],
+  providers: [
+    UserService,
+    BBGoogleSheetsApiService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

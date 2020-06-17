@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TrackeeComponent } from './trackee.component';
+import { TrackeeListComponent } from './trackee-list.component';
 
 describe('TrackeeComponent', () => {
-  let component: TrackeeComponent;
-  let fixture: ComponentFixture<TrackeeComponent>;
+  let component: TrackeeListComponent;
+  let fixture: ComponentFixture<TrackeeListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TrackeeComponent ]
+      declarations: [ TrackeeListComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TrackeeComponent);
+    fixture = TestBed.createComponent(TrackeeListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
