@@ -12,20 +12,23 @@ import {
   NG_GAPI_CONFIG,
   GoogleApiConfig
 } from "./ng-gapi";
+import { TrackeeComponent } from './trackee/trackee/trackee.component';
+import { UserService } from './user/user.service';
 
 let gapiClientConfig: NgGapiClientConfig = {
-  client_id: "CLIENT_ID",
-  discoveryDocs: ["https://analyticsreporting.googleapis.com/$discovery/rest?version=v4"],
+  client_id: "51389497998-jthp31sb7d67mib99pbbmfcsree1be0n.apps.googleusercontent.com",
+  discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
   scope: [
-      "https://www.googleapis.com/auth/analytics.readonly",
-      "https://www.googleapis.com/auth/analytics"
+      "https://www.googleapis.com/auth/spreadsheets.readonly",
+      "https://www.googleapis.com/auth/spreadsheets"
   ].join(" ")
 };
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    TrackeeComponent
   ],
   imports: [
     BrowserModule,
@@ -35,7 +38,7 @@ let gapiClientConfig: NgGapiClientConfig = {
       useValue: gapiClientConfig
     })
   ],
-  providers: [],
+  providers: [UserService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
