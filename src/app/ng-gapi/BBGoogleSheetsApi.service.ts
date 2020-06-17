@@ -1,27 +1,31 @@
 import { Injectable } from '@angular/core';
 import { GoogleApiService } from '.';
+import { Trackee } from '../trackee/trackee-list.component';
 
 @Injectable()
 export class BBGoogleSheetsApiService {
     constructor( private gapiService: GoogleApiService) {}
+    ssId = '1_92f8kBbAWFsAy-1cqpovLxHBJbi4yLb2pATFNm1bzI'
 
-    getOrCreateSpreadsheet() {
-        
+
+    getTrackees(): Trackee[] {
+        let bb = this;
+
         this.gapiService.onLoad().subscribe(() => {
             gapi.load('client', {
                 callback: function() {
                 // Handle gapi.client initialization.
                 gapi.client.load('sheets', 'v4', () => {
                     // console.log(gapi.client.sheets)
-                    let sheets = gapi.client["sheets"]
-                    sheets.spreadsheets.create({
-                    properties: {
-                        title: "Testing from BuddhaBuddy"
-                    }
+                    let sheets = gapi.client['sheets']
+                    sheets.spreadsheets.values.get({
+                        spreadsheetId: bb.ssId,
+                        range: 'A1:C1'
                     }).then((response) => {
-                    console.log(response)
+                        const result = response.result
+                        console.log(result)
+                        return result.values[0];
                     })
-        
                 })
                 // console.log(gapi.client)
                 // initGapiClient();
@@ -37,5 +41,16 @@ export class BBGoogleSheetsApiService {
                 }
             });
         })
+    }
+
+    private createSheet() {
+        let sheets = gapi.client["sheets"]
+        sheets.spreadsheets.create({
+        properties: {
+            title: "BuddhaBuddy Data"
         }
+        }).then((response) => {
+          console.log(response)
+        })
+    }
 }

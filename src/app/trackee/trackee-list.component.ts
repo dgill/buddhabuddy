@@ -9,7 +9,7 @@ import { BBGoogleSheetsApiService } from '../ng-gapi/BBGoogleSheetsApi.service';
   styleUrls: ['./trackee-list.component.css']
 })
 export class TrackeeListComponent implements OnInit {
-  trackeeList: string[]
+  todaysTrackees: Trackee[]
 
   constructor(private userService: UserService, private bbService: BBGoogleSheetsApiService) { }
 
@@ -29,7 +29,9 @@ export class TrackeeListComponent implements OnInit {
   }
 
   createSheet(): void {
-    this.bbService.getOrCreateSpreadsheet()
+    this.todaysTrackees = this.bbService.getTrackees()
+    console.log("today's trackees: ")
+    console.log(this.todaysTrackees)
     //   gapi.client.load("sheets", "4").then(() => {
     //     gapi.client.sheets
     //   }).spreadsheets.create({
@@ -41,4 +43,10 @@ export class TrackeeListComponent implements OnInit {
     // })
   }
 
+}
+
+export class Trackee {
+  label: string
+  value: string
+  date: Date
 }
