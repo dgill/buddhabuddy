@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GoogleApiService } from '.';
 import { Trackee } from '../trackee/trackee-list.component';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class BBGoogleSheetsApiService {
@@ -8,7 +9,7 @@ export class BBGoogleSheetsApiService {
     ssId = '1_92f8kBbAWFsAy-1cqpovLxHBJbi4yLb2pATFNm1bzI'
 
 
-    getTrackees(): Trackee[] {
+    getTrackees(): Observable<Trackee[]> {
         let bb = this;
 
         this.gapiService.onLoad().subscribe(() => {
@@ -41,6 +42,12 @@ export class BBGoogleSheetsApiService {
                 }
             });
         })
+
+        let trackees = [ { label: 'test', data: 1, date: Date.now() } ]
+
+        return new Observable<Trackee[]>(observer => {
+
+        }) // to figure out
     }
 
     private createSheet() {

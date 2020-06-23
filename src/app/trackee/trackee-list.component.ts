@@ -15,7 +15,7 @@ export class TrackeeListComponent implements OnInit {
 
   ngOnInit(): void {
     // Get or create spreadsheet
-
+    
     // Read list of trackee labels from spreadsheet from API
 
     // Read trackee values for today from API
@@ -29,7 +29,9 @@ export class TrackeeListComponent implements OnInit {
   }
 
   createSheet(): void {
-    this.todaysTrackees = this.bbService.getTrackees()
+    // this.todaysTrackees = []
+    // this.bbService.getTrackees().subscribe()
+
     console.log("today's trackees: ")
     console.log(this.todaysTrackees)
     //   gapi.client.load("sheets", "4").then(() => {
