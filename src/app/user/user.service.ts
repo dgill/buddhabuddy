@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class UserService {
     public static SESSION_STORAGE_KEY: string = 'accessToken';
+    private static SPREADSHEET_ID_KEY: string = 'BuddhaBuddySpreadsheetId';
     private user: gapi.auth2.GoogleUser;
     
     constructor(private googleAuth: GoogleAuthService){ 
@@ -32,4 +33,11 @@ export class UserService {
                 UserService.SESSION_STORAGE_KEY, res.getAuthResponse().access_token
             );
         }
+
+    public getSpreadsheetId() {
+        // let configFIle = loadConfigFile()
+    }
+
+    private loadConfigFile() {
+    }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/user/user.service';
 import { GoogleApiService } from 'src/app/ng-gapi';
 import { BBGoogleSheetsApiService } from '../ng-gapi/BBGoogleSheetsApi.service';
+import { BBConfigService } from '../ng-gapi/BBUserConfig.service';
 
 @Component({
   selector: 'app-trackee-list',
@@ -11,7 +12,7 @@ import { BBGoogleSheetsApiService } from '../ng-gapi/BBGoogleSheetsApi.service';
 export class TrackeeListComponent implements OnInit {
   todaysTrackees: Trackee[]
 
-  constructor(private userService: UserService, private bbService: BBGoogleSheetsApiService) { }
+  constructor(private userService: UserService, private bbService: BBGoogleSheetsApiService, private bbConfigService: BBConfigService) { }
 
   ngOnInit(): void {
     // Get or create spreadsheet
@@ -25,15 +26,19 @@ export class TrackeeListComponent implements OnInit {
     
     this.userService.signIn()
 
+    let spreadsheetId = this.userService.getSpreadsheetId()
 
   }
 
   createSheet(): void {
     // this.todaysTrackees = []
-    // this.bbService.getTrackees().subscribe()
+    this.bbService.getTrackees().subscribe((trackees) => {
+      console.log('Got trackees:')
+      console.log(trackees)
+    })
 
-    console.log("today's trackees: ")
-    console.log(this.todaysTrackees)
+    // console.log("today's trackees: ")
+    // console.log(this.todaysTrackees)
     //   gapi.client.load("sheets", "4").then(() => {
     //     gapi.client.sheets
     //   }).spreadsheets.create({
@@ -45,10 +50,16 @@ export class TrackeeListComponent implements OnInit {
     // })
   }
 
+  getConfig(): void {
+    this.bbConfigService.getConfig().then(config => {
+      console.log(config)
+    })
+  }
+
 }
 
 export class Trackee {
-  label: string
-  value: string
-  date: Date
+  label: string;
+  value: number;
+  date: Date;
 }
