@@ -9,7 +9,7 @@ export class BBGoogleSheetsApiService {
     ssId = '1_92f8kBbAWFsAy-1cqpovLxHBJbi4yLb2pATFNm1bzI'
 
 
-    getTrackees(): Observable<Trackee[]> {
+    getTrackees(): Promise<Trackee[]> {
         let bb = this;
 
         this.gapiService.onLoad().subscribe(() => {
@@ -43,11 +43,10 @@ export class BBGoogleSheetsApiService {
             });
         })
 
-        let trackees = [ { label: 'test', data: 1, date: Date.now() } ]
-
-        return new Observable<Trackee[]>(observer => {
-
-        }) // to figure out
+        return new Promise<Trackee[]>((resolve, reject) => {
+            const trackees = [ { label: 'test', value: 1, date: new Date() } ]
+            resolve(trackees)
+        })
     }
 
     private createSheet() {

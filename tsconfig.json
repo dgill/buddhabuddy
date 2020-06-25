@@ -19,6 +19,6 @@
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true,
-    "types": ["gapi", "gapi.auth2"]
+    "types": ["gapi", "gapi.auth2", "gapi.client.drive"]
   }
 }

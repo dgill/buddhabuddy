@@ -15,13 +15,16 @@ import {
 import { TrackeeListComponent } from './trackee/trackee-list.component';
 import { UserService } from './user/user.service';
 import { BBGoogleSheetsApiService } from './ng-gapi/BBGoogleSheetsApi.service';
+import { BBConfigService } from './ng-gapi/BBUserConfig.service';
 
 let gapiClientConfig: NgGapiClientConfig = {
   client_id: "51389497998-jthp31sb7d67mib99pbbmfcsree1be0n.apps.googleusercontent.com",
   discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
   scope: [
       "https://www.googleapis.com/auth/spreadsheets.readonly",
-      "https://www.googleapis.com/auth/spreadsheets"
+      "https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/drive.appdata",
+      // "https://www.googleapis.com/auth/drive.file",
   ].join(" ")
 };
 
@@ -41,7 +44,8 @@ let gapiClientConfig: NgGapiClientConfig = {
   ],
   providers: [
     UserService,
-    BBGoogleSheetsApiService
+    BBGoogleSheetsApiService,
+    BBConfigService
   ],
   bootstrap: [AppComponent]
 })
