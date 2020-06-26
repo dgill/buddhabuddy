@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { GoogleApiService } from '.';
 import { Trackee } from '../trackee/trackee-list.component';
 import { Observable, of } from 'rxjs';
-import {Readable} from 'readable-stream'
+// import {Readable} from 'readable-stream'
+// import { createReadStream } from 'fs'
+
 
 @Injectable()
 export class BBConfigService {
@@ -15,18 +17,62 @@ export class BBConfigService {
     constructor( private gapiService: GoogleApiService) {}
 
     createConfig(): Promise<boolean> {
+        // var fileMetadata = {
+        //     name: 'bbconfig.json',
+        //     parents: ['appDataFolder']
+        //   };
+        // var media = {
+        //     mimeType: 'application/json',
+        //     body: createReadStream('./bbconfig.json')
+        //   };
+
+        // this.gapiService.onLoad().subscribe(() => {
+        //     gapi.load('client', {
+        //         callback: function() {
+        //             gapi.client.load('drive', 'v3', () => {
+        //                 gapi.client.drive.files.create({
+        //                     resource: fileMetadata,
+        //                     media: media,
+        //                     fields: 'id'
+        //                 }).then(response => {
+        //                     switch(response.status) {
+        //                         case 200:
+        //                             let file = response.result  
+        //                             console.log("Created bbconfig file")
+        //                             console.log(file)
+        //                             break;
+        //                         default:
+        //                             console.log("Could not create bbconfig file")
+        //                             break;
+        //                     }
+        //                 })
+        //             })
+        //         }
+        //     })
+        // })
+
+        // return new Promise<boolean>((res, rej) => {})
+
+          ////////////////////////////////////////////
+
+
+
+
         const configData = `{
                 "buddhabuddy_spreadsheet_id": "1234"
             }`
 
-        const stream = new Readable()
-        stream.push(JSON.stringify(configData))
-        stream.push(null)
+        // const stream = new Readable()
+        // stream.push(JSON.stringify(configData))
+        // stream.push(null)
         
         const uploadableConfigFile = {
+            name: 'bbconfig4',
             mimeType: 'application/json',
-            body: stream
-            // body: of(JSON.stringify(BBConfigService.configFileMetadata))
+            parents: ['appDataFolder'],
+            // body: stream
+            // body: of(JSON.stringify(configData))
+            // body: configData
           };
         //Set up stream to push config file to Google
 
@@ -41,10 +87,10 @@ export class BBConfigService {
                     callback: function() {
                         gapi.client.load('drive', 'v3', () => {
                             gapi.client.drive.files.create({
-                                resource: BBConfigService.configFileMetadata,
-                                media: uploadableConfigFile,
-                                fields: 'id'
-                            }).then(response => {
+                                // resource: uploadableConfigFile,
+                                // media: BBConfigService.configFileMetadata,
+                                // fields: 'id',
+                            }, uploadableConfigFile).then(response => {
                                 switch(response.status) {
                                         case 200:
                                             let file = response.result  
@@ -66,6 +112,7 @@ export class BBConfigService {
         })
     }
 
+    
     private getFile(id: string): Promise<object> {
         return new Promise<object>((resolve, reject) => {
             this.gapiService.onLoad().subscribe(() => {
@@ -98,54 +145,6 @@ export class BBConfigService {
         })
     }
 
-    getConfig(): Promise<object> {
-
-        return new Promise<object>((resolve, reject) => {
-            this.gapiService.onLoad().subscribe(() => {
-                gapi.load('client', {
-                    callback: function() {
-                        gapi.client.load('drive', 'v3', () => {
-                            gapi.client.drive.files.list({
-                                // q: `name = 'bbconfig.json'`,
-                                // q: `'appDataFolder' in parents`,
-                                // q: `'appDataFolder' in parents and name = '${BBConfigService.configFileMetadata.name}'`,
-                                fields: 'files(id, name, spaces)',
-                                // spaces: 'appDataFolder'
-                            }).then(response => {
-                                switch(response.status) {
-                                    case 200:
-                                        let fileList = response.result
-                                        console.log(fileList)
-                                        if (fileList.files.length === 1) {
-                                            let file = fileList.files[0]
-                                            console.log('found file with id ' + file.id)
-
-                                            resolve(this.getFile(file.id))
-                                        }
-                                        else if (fileList.files.length === 0) {
-                                            let msg = 'Did not find config file'
-                                            console.log(msg)
-                                            reject(msg)
-                                        }
-                                        else {
-                                            let msg = 'Somehow found more than one config file'
-                                            console.error(msg)
-                                            reject(msg)
-                                        }
-                                        break;
-                                    default:
-                                        let msg = `Listing files (searching for config file) broke: ${response.result}`
-                                        console.error(msg)
-                                        reject(msg)
-                                }
-                            })
-                        })
-                    }
-                })
-            })
-
-        })
-    }
 
     private createSheet() {
         let sheets = gapi.client["sheets"]

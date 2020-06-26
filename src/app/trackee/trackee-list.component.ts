@@ -19,23 +19,28 @@ export class TrackeeListComponent implements OnInit {
     
     // Read list of trackee labels from spreadsheet from API
 
+
     // Read trackee values for today from API
   }
 
   signIn(): void {
-    
     this.userService.signIn()
-
-    let spreadsheetId = this.userService.getSpreadsheetId()
-
   }
 
-  createSheet(): void {
-    // this.todaysTrackees = []
+  loadTrackees(): void {
     this.bbService.getTrackees().then((trackees) => {
       console.log('Got trackees:')
       console.log(trackees)
+      this.todaysTrackees = trackees
     })
+    .catch( (msg) => {
+      console.error(msg)
+    })
+  }
+
+
+  createSheet(): void {
+    // this.todaysTrackees = []
 
     // console.log("today's trackees: ")
     // console.log(this.todaysTrackees)
@@ -49,19 +54,6 @@ export class TrackeeListComponent implements OnInit {
     //   });
     // })
   }
-
-  getConfig(): void {
-    this.bbConfigService.getConfig().then(config => {
-      console.log(config)
-    })
-  }
-
-  createConfig(): void {
-    this.bbConfigService.createConfig().then(success => {
-      console.log(`success: ${success}`)
-    })
-  }
-
 }
 
 export class Trackee {

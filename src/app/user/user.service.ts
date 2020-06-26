@@ -32,12 +32,5 @@ export class UserService {
             sessionStorage.setItem(
                 UserService.SESSION_STORAGE_KEY, res.getAuthResponse().access_token
             );
-        }
-
-    public getSpreadsheetId() {
-        // let configFIle = loadConfigFile()
-    }
-
-    private loadConfigFile() {
     }
 }
