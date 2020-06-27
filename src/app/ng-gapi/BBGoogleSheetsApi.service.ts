@@ -6,7 +6,9 @@ import { promise } from 'protractor';
 
 @Injectable()
 export class BBGoogleSheetsApiService {
+    
     ssID: string
+    gsheets: gapi.client.sheets.SpreadsheetsResource // gapi.client.sheets when loaded
 
     constructor( private gapiService: GoogleApiService) {
         
@@ -87,8 +89,8 @@ export class BBGoogleSheetsApiService {
                 this.gapiService.onLoad().subscribe(() => {
                     gapi.load('client', () => {
                         gapi.client.load('sheets', 'v4', () => {
-                            let sheets = gapi.client['sheets']
-                            sheets.spreadsheets.values.get({
+                            this.gsheets = gapi.client.sheets.spreadsheets
+                            this.gsheets.values.get({
                                 spreadsheetId: bb.ssID,
                                 range: 'A1:D' // Get the whole sheet
                             }).then(response => {
@@ -103,10 +105,12 @@ export class BBGoogleSheetsApiService {
                                             const [, ... trackeeValues] = lastRow // Skip timestamp
                                             const lastDate = lastRow[0]
                                             const trackees = trackeeLabels.map((label) => {
+                                                const column = trackeeLabels.indexOf(label)
                                                 return {
                                                     label: label,
-                                                    value: Number(trackeeValues[trackeeLabels.indexOf(label)]),
-                                                    date: lastDate
+                                                    value: Number(trackeeValues[column]),
+                                                    date: lastDate,
+                                                    range: String.fromCharCode('B'.charCodeAt(0) + column) + (lastRowNumber + 1)
                                                 }
                                             })
                                             console.log(trackees)
@@ -166,18 +170,47 @@ export class BBGoogleSheetsApiService {
             });
         })
 
-        return new Promise<Trackee[]>((resolve, reject) => {
-            const trackees = [ { label: 'test', value: 1, date: new Date() } ]
-            resolve(trackees)
-        })
     }
+
+    incrementTrackee(trackee: Trackee): Promise<boolean> {
+        if (this.gsheets != null) {
+            return new Promise<boolean>((resolve, reject) => {
+                console.log('here')
+                this.gsheets.values.update({
+                    spreadsheetId: this.ssID,
+                    range: trackee.range,
+                    valueInputOption: 'Raw',
+                    resource: {
+                        values: [[trackee.value]]
+                    }
+                }).then((response) => {
+                    switch(response.status) {
+                        case 200:
+                            const result = response.result
+                            console.log(result)
+                            resolve(true)
+                            break
+                        default:
+                            const msg = 'Could not increment range ' + trackee.range
+                            console.log(msg)
+                            reject(msg)
+                    }
+                })
+            })
+        }
+        else {
+            console.error('gapi.client.sheets is not loaded when trying to increment (how?)')
+        }
+      }
 
     private createSheet() {
         let sheets = gapi.client["sheets"]
         sheets.spreadsheets.create({
-        properties: {
-            title: "BuddhaBuddy Data"
-        }
+            resource: {
+                properties: {
+                    title: "BuddhaBuddy Data"
+                }
+            }
         }).then((response) => {
           console.log(response)
         })

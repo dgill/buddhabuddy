@@ -38,6 +38,17 @@ export class TrackeeListComponent implements OnInit {
     })
   }
 
+  increment(trackee: Trackee): void {
+    trackee.value++
+    this.bbService.incrementTrackee(trackee).then(() => {
+
+    })
+    .catch((msg) => {
+      trackee.value--
+      console.error(msg)
+    })
+  }
+
 
   createSheet(): void {
     // this.todaysTrackees = []
@@ -60,4 +71,5 @@ export class Trackee {
   label: string;
   value: number;
   date: Date;
+  range: string; // Range in spreadsheet
 }
