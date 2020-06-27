@@ -90,14 +90,36 @@ export class BBGoogleSheetsApiService {
                             let sheets = gapi.client['sheets']
                             sheets.spreadsheets.values.get({
                                 spreadsheetId: bb.ssID,
-                                range: 'B1:D1'
+                                range: 'A1:D' // Get the whole sheet
                             }).then(response => {
                                 switch (response.status) {
                                     case 200:
                                         const result = response.result
-                                        let labels = result.values[0]
                                         console.log(result)
-                                        resolve(labels)
+                                        if (result.values.length > 1) {
+                                            const lastRowNumber = result.values.length - 1
+                                            const [, ...trackeeLabels] = result.values[0] // Skip first (timestamp) column
+                                            const lastRow = result.values[lastRowNumber]
+                                            const [, ... trackeeValues] = lastRow // Skip timestamp
+                                            const lastDate = lastRow[0]
+                                            const trackees = trackeeLabels.map((label) => {
+                                                return {
+                                                    label: label,
+                                                    values: trackeeValues[trackeeLabels.indexOf(label)],
+                                                    date: lastDate
+                                                }
+                                            })
+                                            console.log(trackees)
+                                            resolve(trackees)
+                                        }
+                                        else if (result.values.length === 0) {
+                                            const msg = 'Did not find any data in BB Data sheet'
+                                            console.error(msg)
+                                            reject(msg)
+                                        }
+                                        else if (result.values.length === 1) {
+                                            // values are zero, have to add new day
+                                        }
                                         break
                                     default:
                                         reject(`Response when trying to load trackees was ${response.status}`)
