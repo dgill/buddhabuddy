@@ -105,7 +105,7 @@ export class BBGoogleSheetsApiService {
                                             const trackees = trackeeLabels.map((label) => {
                                                 return {
                                                     label: label,
-                                                    values: trackeeValues[trackeeLabels.indexOf(label)],
+                                                    value: Number(trackeeValues[trackeeLabels.indexOf(label)]),
                                                     date: lastDate
                                                 }
                                             })

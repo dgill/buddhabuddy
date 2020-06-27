@@ -2,3 +2,12 @@
 <button (click)="signIn()">Sign in</button>
 <!-- <button (click)="createSheet()">Create Sheet</button> -->
 <button (click)="loadTrackees()">Load Trackees</button>
+<ul id="todaysTrackeeList" style="list-style-type: none;" *ngFor="let trackee of todaysTrackees">
+    <li>
+        <label>{{trackee.label}}</label>
+        <span style="float: right;">
+            <input type="text" value="{{trackee.value}}" />
+            <button style="margin-left: 10px">+</button>
+        </span>
+    </li>
+</ul>

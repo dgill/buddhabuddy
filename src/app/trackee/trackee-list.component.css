@@ -1,0 +1,12 @@
+
+ul#todaysTrackeeList {
+    width: 250px;
+    padding-left: 0;
+    margin-top: 20px;
+}
+ul#todaysTrackeeList li {
+    height: 30px;
+}
+ul#todaysTrackeeList input {
+    width: 20px;
+}
