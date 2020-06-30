@@ -167,26 +167,35 @@ export class BBGoogleSheetsApiService {
         const lastDate = new Date(lastRow[0])
         const today = new Date()
         let todaysRowNumber = lastRowNumber
+        let startingNewRow = false
 
         // Do we need to start a new day's row?
-        // if (lastDate.getFullYear() !== today.getFullYear() ||
-        //     lastDate.getMonth() !== today.getMonth() ||
-        //     lastDate.getDay() !== today.getDay() ) {
-        //         todaysRowNumber = lastRowNumber + 1
-        //         this.startNewDay(this.buildA1Notation(0, todaysRowNumber))
-        //         .catch((msg) => {
+        if (lastDate.getFullYear() !== today.getFullYear() ||
+            lastDate.getMonth() !== today.getMonth() ||
+            lastDate.getDay() !== today.getDay() ) {
+                startingNewRow = true
+                todaysRowNumber = lastRowNumber + 1
+                this.startNewDay(this.buildA1Notation(0, todaysRowNumber))
+                .catch((msg) => {
 
-        //             // try again?
-        //         })
-        // }
+                    // try again?
+                })
+        }
 
         const trackees = trackeeLabels.map((label) => {
             const column = trackeeLabels.indexOf(label)
+            let trackeeValue = Number(trackeeValues[column])
+            if (startingNewRow) {
+                trackeeValue = 0
+            } else if (Number.isNaN(trackeeValue)) {
+                trackeeValue = 0
+            }
+
             return {
                 label: label,
-                value: Number(trackeeValues[column]),
+                value: trackeeValue,
                 date: today,
-                range: this.buildA1Notation(column, todaysRowNumber)
+                range: this.buildA1Notation(column + 1, todaysRowNumber) // COlumn + 1 to start at 'B'
             }
         })
         return trackees
@@ -194,7 +203,7 @@ export class BBGoogleSheetsApiService {
 
     // Builds (A/1-indexed) A1 notation used in google sheets ranges from 0-indexed rows and columns.
     buildA1Notation(column: number, row: number): string {
-        return String.fromCharCode('B'.charCodeAt(0) + column) + (row + 1) // BUild A1 notation
+        return String.fromCharCode('A'.charCodeAt(0) + column) + (row + 1) // BUild A1 notation
     }
 
     private startNewDay(range): Promise<boolean> {
@@ -205,7 +214,7 @@ export class BBGoogleSheetsApiService {
                     range: range,
                     valueInputOption: 'Raw',
                     resource: {
-                        values: [[new Date()]]
+                        values: [[new Date().toLocaleDateString()]]
                     }
                 }).then((response) => {
                     switch(response.status) {
