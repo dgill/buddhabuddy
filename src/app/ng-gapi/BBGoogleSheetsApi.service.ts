@@ -92,28 +92,14 @@ export class BBGoogleSheetsApiService {
                             this.gsheets = gapi.client.sheets.spreadsheets
                             this.gsheets.values.get({
                                 spreadsheetId: bb.ssID,
-                                range: 'A1:D' // Get the whole sheet
+                                range: 'A1:Z' // Get the whole sheet
                             }).then(response => {
                                 switch (response.status) {
                                     case 200:
                                         const result = response.result
                                         console.log(result)
                                         if (result.values.length > 1) {
-                                            const lastRowNumber = result.values.length - 1
-                                            const [, ...trackeeLabels] = result.values[0] // Skip first (timestamp) column
-                                            const lastRow = result.values[lastRowNumber]
-                                            const [, ... trackeeValues] = lastRow // Skip timestamp
-                                            const lastDate = lastRow[0]
-                                            const trackees = trackeeLabels.map((label) => {
-                                                const column = trackeeLabels.indexOf(label)
-                                                return {
-                                                    label: label,
-                                                    value: Number(trackeeValues[column]),
-                                                    date: lastDate,
-                                                    range: String.fromCharCode('B'.charCodeAt(0) + column) + (lastRowNumber + 1)
-                                                }
-                                            })
-                                            console.log(trackees)
+                                            const trackees = this.buildTrackeesFrom(result)
                                             resolve(trackees)
                                         }
                                         else if (result.values.length === 0) {
@@ -172,10 +158,78 @@ export class BBGoogleSheetsApiService {
 
     }
 
+    
+    private buildTrackeesFrom(result: gapi.client.sheets.ValueRange): Trackee[] {
+        const lastRowNumber = result.values.length - 1
+        const lastRow = result.values[lastRowNumber]
+        const [, ...trackeeLabels] = result.values[0] // Skip first (timestamp) column
+        const [, ... trackeeValues] = lastRow // Skip timestamp
+        const lastDate = new Date(lastRow[0])
+        const today = new Date()
+        let todaysRowNumber = lastRowNumber
+
+        // Do we need to start a new day's row?
+        // if (lastDate.getFullYear() !== today.getFullYear() ||
+        //     lastDate.getMonth() !== today.getMonth() ||
+        //     lastDate.getDay() !== today.getDay() ) {
+        //         todaysRowNumber = lastRowNumber + 1
+        //         this.startNewDay(this.buildA1Notation(0, todaysRowNumber))
+        //         .catch((msg) => {
+
+        //             // try again?
+        //         })
+        // }
+
+        const trackees = trackeeLabels.map((label) => {
+            const column = trackeeLabels.indexOf(label)
+            return {
+                label: label,
+                value: Number(trackeeValues[column]),
+                date: today,
+                range: this.buildA1Notation(column, todaysRowNumber)
+            }
+        })
+        return trackees
+    }
+
+    // Builds (A/1-indexed) A1 notation used in google sheets ranges from 0-indexed rows and columns.
+    buildA1Notation(column: number, row: number): string {
+        return String.fromCharCode('B'.charCodeAt(0) + column) + (row + 1) // BUild A1 notation
+    }
+
+    private startNewDay(range): Promise<boolean> {
+        if (this.gsheets != null) {
+            return new Promise<boolean>((resolve, reject) => {
+                this.gsheets.values.update({
+                    spreadsheetId: this.ssID,
+                    range: range,
+                    valueInputOption: 'Raw',
+                    resource: {
+                        values: [[new Date()]]
+                    }
+                }).then((response) => {
+                    switch(response.status) {
+                        case 200:
+                            const result = response.result
+                            console.log(result)
+                            resolve(true)
+                            break
+                        default:
+                            const msg = `Could not start a new row for today (${new Date()}) `
+                            console.log(msg)
+                            reject(msg)
+                    }
+                })
+            })
+        }
+        else {
+            console.error('gapi.client.sheets is not loaded when trying to start a new day')
+        }
+    }
+
     incrementTrackee(trackee: Trackee): Promise<boolean> {
         if (this.gsheets != null) {
             return new Promise<boolean>((resolve, reject) => {
-                console.log('here')
                 this.gsheets.values.update({
                     spreadsheetId: this.ssID,
                     range: trackee.range,
