@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "health-tracker-atdjlk": {
+      "hosting": {
+        "BuddhaBuddy": [
+          "health-tracker-atdjlk"
+        ]
+      }
+    }
+  }
+}
